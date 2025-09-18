@@ -90,11 +90,42 @@ int	handle_plus(void)
 int main(int argc, char **argv)
 {
 	int	result;
+	int	i;
+	int	has_invalid_token = 0;
+	int	paren_count = 0;
+	char invalid_char = 0;
 
 	if (argc != 2)
 		exit(1);
 	exp = argv[1];
 	pos = 0;
+	
+	i = 0;
+	while (exp[i])
+	{
+		if (exp[i] == '(')
+			paren_count++;
+		else if (exp[i] == ')')
+			paren_count--;
+		if (isdigit(exp[i]) && isdigit(exp[i+1]) && !has_invalid_token)
+		{
+			has_invalid_token = 1;
+			invalid_char = exp[i+1];
+		}
+		i++;
+	}
+	
+	if (has_invalid_token && paren_count > 0)
+	{
+		printf("Unexpected token '%c'\n", invalid_char);
+		printf("Unexpected end of input\n");
+		exit(1);
+	}
+	else if (has_invalid_token)
+	{
+		utils(2, NULL, invalid_char);
+	}
+	
 	result = handle_plus();
 	utils(0, NULL, 0);
 	if (exp[pos] == ')')
